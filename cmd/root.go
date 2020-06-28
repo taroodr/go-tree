@@ -99,7 +99,11 @@ var rootCmd = &cobra.Command{
 	Use: "go-tree",
 	Run: func(c *cobra.Command, args []string) {
 		fmt.Println("level:", ops.Level)
-		nodes := readDirectory(args[0], 1, ops)
+		searchDirectoryName := "./"
+		if len(args) != 0 {
+			searchDirectoryName = args[0]
+		}
+		nodes := readDirectory(searchDirectoryName, 1, ops)
 		result := format(nodes, "")
 		fmt.Println(result)
 	},
