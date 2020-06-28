@@ -37,18 +37,27 @@ type node struct {
 
 type nodes []*node
 
-func readDirectory(dir string) nodes {
+type options struct {
+	Level uint16
+}
+
+var ops = options{}
+
+func readDirectory(dir string, depth uint16, ops options) nodes {
+	var nodes nodes
+	if ops.Level < depth {
+		return nodes
+	}
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	var nodes nodes
 	for _, file := range files {
 		if switchType(file) == "directory" {
 			fullPath := filepath.Join(dir, file.Name())
-			nodes = append(nodes, &node{Type: switchType(file), Name: file.Name(), Nodes: readDirectory(fullPath)})
+			nodes = append(nodes, &node{Type: switchType(file), Name: file.Name(), Nodes: readDirectory(fullPath, depth+1, ops)})
 		} else {
 			nodes = append(nodes, &node{Type: switchType(file), Name: file.Name()})
 		}
@@ -89,8 +98,8 @@ func format(nodes nodes, prefix string) string {
 var rootCmd = &cobra.Command{
 	Use: "go-tree",
 	Run: func(c *cobra.Command, args []string) {
-		fmt.Println(args[0])
-		nodes := readDirectory(args[0])
+		fmt.Println("level:", ops.Level)
+		nodes := readDirectory(args[0], 1, ops)
 		result := format(nodes, "")
 		fmt.Println(result)
 	},
@@ -117,6 +126,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().Uint16VarP(&ops.Level, "level", "L", 65535, "Descend only level directories deep.")
 }
 
 // initConfig reads in config file and ENV variables if set.
