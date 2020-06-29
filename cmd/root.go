@@ -32,7 +32,7 @@ type node struct {
 	Nodes nodes
 }
 
-type nodes []*node
+type nodes []node
 
 type options struct {
 	Level uint16
@@ -54,9 +54,9 @@ func readDirectory(dir string, depth uint16, ops options) nodes {
 	for _, file := range files {
 		if switchType(file) == "directory" {
 			fullPath := filepath.Join(dir, file.Name())
-			nodes = append(nodes, &node{Type: switchType(file), Name: file.Name(), Nodes: readDirectory(fullPath, depth+1, ops)})
+			nodes = append(nodes, node{Type: switchType(file), Name: file.Name(), Nodes: readDirectory(fullPath, depth+1, ops)})
 		} else {
-			nodes = append(nodes, &node{Type: switchType(file), Name: file.Name()})
+			nodes = append(nodes, node{Type: switchType(file), Name: file.Name()})
 		}
 	}
 	return nodes
