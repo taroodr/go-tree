@@ -24,8 +24,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cfgFile string
-
 type node struct {
 	Type  interface{}
 	Name  string
@@ -95,7 +93,6 @@ func format(nodes nodes, prefix string) string {
 var rootCmd = &cobra.Command{
 	Use: "go-tree",
 	Run: func(c *cobra.Command, args []string) {
-		fmt.Println("level:", ops.Level)
 		searchDirectoryName := "./"
 		if len(args) != 0 {
 			searchDirectoryName = args[0]
@@ -116,8 +113,6 @@ func Execute() {
 }
 
 func init() {
-	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.PersistentFlags().Uint16VarP(&ops.Level, "level", "L", 65535, "Descend only level directories deep.")
 }
